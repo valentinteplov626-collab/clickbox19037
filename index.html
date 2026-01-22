@@ -1,0 +1,142 @@
+<!doctype html>
+<html data-version="0.0.133" data-landing-name="clickbox" data-env="production-archive" lang="">
+
+<head>
+    <script>
+    var APP_CONFIG = {
+        "domain": "https://jup9.com",
+        "mainExit_currentTab_zoneId": 10482361,
+        "mainExit_newTab_zoneId": 10482360,
+        "reverse_zoneId": 10482359,
+        "autoexit_zoneId": 10482362,
+        "autoexit_timeToRedirect": 90,
+        "back_zoneId": 10482363,
+        "back_count": 10,
+        "tabUnderClick_zoneId": 10482365,
+        "secondsLeftBeforeFinal": 10
+    };
+</script>
+    <script>"use strict";(()=>{var g=()=>{let t=new Date,r=t.getUTCFullYear(),s=String(t.getUTCMonth()+1).padStart(2,"0"),n=String(t.getUTCDate()).padStart(2,"0"),o=String(t.getUTCHours()).padStart(2,"0"),a=String(t.getUTCMinutes()).padStart(2,"0"),c=String(t.getUTCSeconds()).padStart(2,"0"),_=String(t.getUTCMilliseconds()*1e3).padStart(6,"0");return`${r}-${s}-${n} ${o}:${a}:${c}.${_} +00:00`};function d({url:t,data:r}){var n;return((n=window==null?void 0:window.navigator)==null?void 0:n.sendBeacon(t.toString(),r?JSON.stringify(r):void 0))?Promise.resolve():Promise.reject(new Error("sendBeacon failed"))}var e=new URL(window.location.href),b,v,h,p,E,T,P,y,N,w,R,f,O,D,S,x,z,C,Y,i={pz:(b=e.searchParams.get("pz"))!=null?b:"",tb:(v=e.searchParams.get("tb"))!=null?v:"",tb_reverse:(h=e.searchParams.get("tb_reverse"))!=null?h:"",ae:(p=e.searchParams.get("ae"))!=null?p:"",z:(E=e.searchParams.get("z"))!=null?E:"",var:(T=e.searchParams.get("var"))!=null?T:"",var_1:(P=e.searchParams.get("var_1"))!=null?P:"",var_2:(y=e.searchParams.get("var_2"))!=null?y:"",var_3:(N=e.searchParams.get("var_3"))!=null?N:"",b:(w=e.searchParams.get("b"))!=null?w:"",campaignid:(R=e.searchParams.get("campaignid"))!=null?R:"",abtest:(f=e.searchParams.get("abtest"))!=null?f:"",rhd:(O=e.searchParams.get("rhd"))!=null?O:"1",s:(D=e.searchParams.get("s"))!=null?D:"",ymid:(S=e.searchParams.get("ymid"))!=null?S:"",wua:(x=e.searchParams.get("wua"))!=null?x:"",use_full_list_or_browsers:(z=e.searchParams.get("use_full_list_or_browsers"))!=null?z:"",cid:(C=e.searchParams.get("cid"))!=null?C:"",geo:(Y=e.searchParams.get("geo"))!=null?Y:""};var k={start:"start",ageExit:"age_exit",mainExit:"main_exit",push:"push",autoexit:"autoexit",back:"back",reverse:"reverse",tabUnderClick:"tab_under_click",error:"error",unhandledRejection:"unhandled_rejection",template_hash_ready:"template_hash_ready"},B=g(),q=t=>{let r;(a=>a[a.BAD_REQUEST=400]="BAD_REQUEST")(r||(r={}));let s="https://wuytl.com",n=new URL(`${s}/sync-metrics`);d({url:n,data:t}).catch(o=>{o.status!=400&&setTimeout(()=>{d({url:n,data:t}).catch(()=>{console.error(`Metrics sync failed: ${t}`)})},100)})},j=()=>i.abtest?i.abtest:APP_CONFIG.abtest?String(APP_CONFIG.abtest):void 0,I=({event:t,exitZoneId:r,errorMessage:s,errorSubType:n,errorType:o})=>{var l,u,m;let a=(l=document.querySelector("html"))==null?void 0:l.dataset,c=(a==null?void 0:a.landingName)||"",_=(a==null?void 0:a.version)||"",F=(a==null?void 0:a.env)||"",U=window.location.host,$=[{app:"landings-constructor",event:k[t]||t,landing_name:c,build_version:_,landing_domain:U,landing_url:window.location.href,exit_zone_id:r?Number(r):void 0,template_hash:(u=window.templateHash)!=null?u:"",request_var:i.var_3,source_zone_id:isNaN(Number(i.var_2))?null:Number(i.var_2),sub_id:i.var_1,landing_load_date_time:B,error_message:s!=null?s:"",ab2r:j(),error_sub_type:n,error_type:o,env:F}];((m=APP_CONFIG.isAnalyticEnabled)!=null?m:!0)&&q($)};window.syncMetric=I;I({event:"start"});})();</script>
+    <script>"use strict";(()=>{var m=(n=>(n.CUSTOM="CUSTOM",n.JS="JS",n))(m||{}),y=(e=>(e.FetchPlatformVersion="FetchPlatformVersion",e.GetIntlDateTimeFormat="GetIntlDateTimeFormat",e.GetTranslations="GetTranslations",e.PushStateToHistory="PushStateToHistory",e.Reverse="Reverse",e.TemplateHash="TemplateHash",e.DesignChange="DesignChange",e))(y||{}),c=(e=>(e.Error="Error",e.RangeError="RangeError",e.ReferenceError="ReferenceError",e.SecurityError="SecurityError",e.SyntaxError="SyntaxError",e.TypeError="TypeError",e.Unknown="Unknown",e))(c||{}),l=(n=>(n.rejectionhandled="rejectionhandled",n.unhandledrejection="unhandledrejection",n))(l||{});const p=()=>{const t=window.syncMetric;if(!t){console.log("Sync metric is not initialized");return}const d=r=>{if(r.filename.includes("extension"))return;const s=`errorMessage: ${r.message}, lineNumber: ${r.lineno}, columnNumber: ${r.colno}, file: ${r.filename}`,o=r.error.name&&Object.values(c).includes(r.error.name)?r.error.name:"Unknown";t({event:"error",errorMessage:s,errorSubType:o,errorType:"JS"})},n=r=>{var e,a,i;if(typeof r.reason=="object"&&((a=(e=r.reason)==null?void 0:e.stack)!=null&&a.includes("extension")))return;const s=typeof r.reason=="object"&&((i=r.reason)!=null&&i.message)?r.reason.message:JSON.stringify(r.reason),o=r.type,u=Object.values(l).includes(o)?o:"Unknown";t({event:"unhandledRejection",errorMessage:s,errorSubType:u,errorType:"JS"})};window.addEventListener("error",d),window.addEventListener("unhandledrejection",n)};p();})();</script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+    <meta name="google" value="notranslate" />
+    <title data-translate="claim_your_reward">Claim Your Reward!</title>
+    <link rel="icon" type="image/png" href="./assets/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="./assets/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="./assets/favicon/site.webmanifest" />
+    <link rel="stylesheet" id="main-css" href="./assets/styles/style.css">
+    <script defer src="./assets/scripts/common.js"></script>
+    <!-- UNCOMMENT SCRIPTS BELLOW AND COMMENT LINE ABOVE, IF YOU WANT TO CUSTOMIZE FEATURES-->
+    <!--
+        <script type="module" defer src="./assets/scripts/autoexit.js"></script>
+        <script type="module" defer src="./assets/scripts/pushScript.js"></script>
+        <script type="module" defer src="./assets/scripts/reverse.js"></script>
+        <script type="module" defer src="./assets/scripts/main.js"></script>
+        <script type="module" defer src="./assets/scripts/translateElements.js"></script>
+    -->
+</head>
+
+<body>
+    <!-- Section Background -->
+    <section class="background">
+        <div class="background__left">
+            <div class="background__left__top">
+                <img aria-hidden="true" alt="Cloud" class="background__cloud background__cloud-left-1" src="./assets/images/cloud-left-1.webp" />
+            </div>
+            <div class="background__left__bottom">
+                <img aria-hidden="true" alt="Cloud" class="background__cloud background__cloud-left-2" src="./assets/images/cloud-left-2.webp" />
+                <img aria-hidden="true" alt="Cloud" class="background__cloud background__cloud-left-3" src="./assets/images/cloud-left-3.webp" />
+                <img aria-hidden="true" alt="Cloud" class="background__cloud background__cloud-left-4" src="./assets/images/cloud-left-4.webp" />
+            </div>
+        </div>
+        <div class="background__right">
+            <div class="background__right__top">
+                <img aria-hidden="true" alt="Cloud" class="background__cloud background__cloud-right-1" src="./assets/images/cloud-right-1.webp" />
+            </div>
+            <div class="background__right__bottom">
+                <img aria-hidden="true" alt="Cloud" class="background__cloud background__cloud-right-2" src="./assets/images/cloud-right-2.webp" />
+                <img aria-hidden="true" alt="Cloud" class="background__cloud background__cloud-right-3" src="./assets/images/cloud-right-3.webp" />
+            </div>
+        </div>
+        <div class="background__stars">
+            <img aria-hidden="true" alt="Star" class="background__star background__star-1" src="./assets/images/star-five-pointed.webp" />
+            <img aria-hidden="true" alt="Star" class="background__star background__star-2" src="./assets/images/star-five-pointed.webp" />
+            <img aria-hidden="true" alt="Star" class="background__star background__star-3" src="./assets/images/star-five-pointed.webp" />
+            <img aria-hidden="true" alt="Star" class="background__star background__star-4" src="./assets/images/star-five-pointed.webp" />
+            <img aria-hidden="true" alt="Star" class="background__star background__star-5" src="./assets/images/star-five-pointed.webp" />
+            <img aria-hidden="true" alt="Star" class="background__star background__star-6" src="./assets/images/star-four-pointed.webp" />
+        </div>
+    </section>
+
+    <!-- Section Game Clicker -->
+    <section class="game blur">
+        <header class="game__header">
+            <h1 class="game__header__h1" data-translate="tap_to_earn">
+                Tap to earn your bonus
+            </h1>
+            <h3 class="game__header__h3 game__progress__value-header" data-translate="you_have_10_seconds">
+                You have 10 seconds
+            </h3>
+        </header>
+        <main class="game__main">
+            <img aria-hidden="true" alt="Treasure chest" class="game__main__image" src="./assets/images/treasure-chest.webp" />
+            <img aria-hidden="true" alt="Hand" class="game__main__image-hand game__main__image-hand-animation-pulse" src="./assets/images/hand.webp" />
+            <div class="game__main__bonus-container"></div>
+        </main>
+        <footer class="game__footer">
+            <div class="game__progress hidden">
+                <div class="game__progress__bar"></div>
+                <div class="game__progress__text">
+                    <span data-translate="time_left"> Time left: </span>
+                    &nbsp;
+                    <span class="game__progress__value"> 10 </span>
+                </div>
+            </div>
+        </footer>
+    </section>
+
+    <!-- Section Game Clicker: Final Screen -->
+    <section class="game-final-screen hidden">
+        <header class="game__header">
+            <h1 class="game__header__h1" data-translate="congratulations">
+                Congratulations
+            </h1>
+            <p class="game__header__text" data-translate="you_have_to_get_the_bonus">
+                You have 00:01:30 to get the bonus!
+            </p>
+            <h3 class="game__header__h3" data-translate="click_and_claim_your_reward">
+                Click on the button bellow and claim your reward.
+            </h3>
+        </header>
+        <main class="game__main">
+            <img aria-hidden="true" alt="Treasure chest" class="game__main__image" src="./assets/images/treasure-chest.webp" />
+        </main>
+        <footer class="game__footer">
+            <button class="game__button" data-translate="claim_reward">
+                Claim reward
+            </button>
+        </footer>
+    </section>
+
+    <!-- Section Modal -->
+    <section class="modal">
+        <div class="modal__window">
+            <h3 class="modal__window__title" data-translate="congratulations">
+                Congratulations!
+            </h3>
+            <p class="modal__window__text" data-translate="you_have_10_seconds_tap_to_earn">
+                You have only 10 seconds. Tap to earn your bonus!
+            </p>
+            <a class="modal__window__button" href="#" data-translate="start">
+                Start
+            </a>
+        </div>
+    </section>
+
+    <script>"use strict";(()=>{const c=typeof window<"u"&&(window.isSecureContext||window.location.protocol==="https:"||window.location.hostname==="localhost");function l(n){return new Promise((e,t)=>{try{if(!c)return t("this feature is available only in secure contexts (HTTPS)");if(!(crypto!=null&&crypto.subtle.digest))return t("crypto.subtle.digest is not available");const r=new TextEncoder;crypto.subtle.digest("SHA-256",r.encode(n)).then(s=>{const i=Array.from(new Uint8Array(s)).map(a=>a.toString(16).padStart(2,"0")).join("");e(i)}).catch(t)}catch(r){t(r)}})}function d(n){let e=n;return e=e.replace(/<base.*?>/gm,""),e=e.replace(/var\s+APP_CONFIG\s*=\s*\{[^}]*\};*/gm,""),e=e.replace(/<script[^>]*src=["'].*?hid\.js.*?["'][^>]*><\/script>/gm,""),e=e.replace(/[\r\n]/gm,""),e=e.replace(/\s+/g,""),e.trim()}function o(n){const e=n instanceof Error?n.message:JSON.stringify(n);window.syncMetric&&window.syncMetric({event:"error",errorMessage:e,errorType:"CUSTOM",errorSubType:"TemplateHash"})}window.templateHash=null;try{document.addEventListener("DOMContentLoaded",()=>{const n=d(document.documentElement.innerHTML);new URL(window.location.href).searchParams.get("debug")&&console.log("HTML used for templateHash",n),l(JSON.stringify([n])).then(e=>{var t;window.templateHash=e,(t=window.syncMetric)==null||t.call(window,{event:"template_hash_ready"})}).catch(e=>{o(e)})})}catch(n){o(n)}})();</script>
+    </body>
+
+</html>
