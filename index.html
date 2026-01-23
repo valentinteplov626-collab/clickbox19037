@@ -19,82 +19,69 @@
     </script>
 
     <style>
-        body, html { 
-            margin: 0; 
-            padding: 0; 
-            width: 100%; 
-            height: 100%; 
-            overflow: hidden; 
-            background: #000; 
-            font-family: sans-serif; 
-        }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
 
-        /* Исправленный фон: видео на весь экран без искажений */
-        .video-bg {
+        /* Видео фон: принудительно на задний план */
+        #bgVideo {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
-            object-fit: cover; 
+            object-fit: cover;
+            z-index: 1; /* Самый нижний слой */
         }
 
-        /* Контейнер игры: центрируем шарики */
-        .game-overlay {
-            position: relative;
+        /* Игровой слой поверх видео */
+        .game-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center; /* Теперь шарики будут по центру, а не внизу */
             z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.01); /* Позволяет ловить клики */
         }
 
-        .balls-container {
+        .balls-row {
             display: flex;
-            justify-content: space-around;
+            justify-content: space-evenly;
             align-items: center;
             width: 100%;
-            max-width: 500px;
             padding: 0 10px;
         }
 
-        /* Исправленные шарики: сохраняем пропорции */
         .ball {
-            width: 30%; 
-            height: auto; /* Важно: auto предотвращает сплющивание */
+            width: 30%;
+            max-width: 130px;
+            height: auto;
             cursor: pointer;
-            filter: drop-shadow(0 0 15px rgba(255,255,255,0.6));
-            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.7));
+            transition: transform 0.1s ease;
             -webkit-tap-highlight-color: transparent;
+            animation: float 3s ease-in-out infinite;
         }
-
-        .ball:nth-child(2) { animation-delay: 0.5s; }
-        .ball:nth-child(3) { animation-delay: 1s; }
 
         @keyframes float {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            50% { transform: translateY(-15px); }
         }
 
-        /* Эффект тряски при клике */
-        .shake { animation: shakeAnim 0.15s ease-in-out !important; }
+        .shake { animation: shakeAnim 0.1s ease-in-out !important; }
         @keyframes shakeAnim {
-            0% { transform: scale(var(--scale)) translate(0,0); }
-            25% { transform: scale(var(--scale)) translate(5px, -5px); }
-            50% { transform: scale(var(--scale)) translate(-5px, 5px); }
-            100% { transform: scale(var(--scale)) translate(0,0); }
+            0% { transform: scale(var(--s)) rotate(0); }
+            50% { transform: scale(var(--s)) rotate(5deg); }
+            100% { transform: scale(var(--s)) rotate(0); }
         }
 
-        /* Финальное окно */
-        #finalScreen {
+        #winScreen {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.9);
             z-index: 100;
             flex-direction: column;
             align-items: center;
@@ -102,82 +89,62 @@
             color: #fff;
             text-align: center;
         }
-
-        .btn-claim {
-            margin-top: 20px;
-            padding: 15px 40px;
-            background: #ff0055;
-            color: #fff;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 20px;
-            border: none;
-            box-shadow: 0 0 20px #ff0055;
-        }
     </style>
 </head>
 <body class="xh-fake-player">
 
-    <video class="video-bg" id="bgVideo" autoplay muted loop playsinline>
+    <video id="bgVideo" autoplay muted loop playsinline preload="auto">
         <source src="https://click.igennos.store/images/bg1.mp4" type="video/mp4">
     </video>
 
-    <div class="game-overlay">
-        <div class="balls-container">
-            <img class="ball" src="https://click.igennos.store/images/11.png" alt="gift">
-            <img class="ball" src="https://click.igennos.store/images/22.png" alt="gift">
-            <img class="ball" src="https://click.igennos.store/images/33.png" alt="gift">
+    <div class="game-layer">
+        <div class="balls-row">
+            <img class="ball" src="https://click.igennos.store/images/11.png" alt="1">
+            <img class="ball" src="https://click.igennos.store/images/22.png" alt="2">
+            <img class="ball" src="https://click.igennos.store/images/33.png" alt="3">
         </div>
     </div>
 
-    <div id="finalScreen">
-        <h1>CONGRATULATIONS!</h1>
-        <p>You unlocked your special reward!</p>
-        <button class="btn-claim">CLAIM NOW</button>
+    <div id="winScreen">
+        <h1 style="font-size: 32px;">CONGRATULATIONS!</h1>
+        <button onclick="location.reload()" style="padding: 15px 30px; border-radius: 30px; background: #f05; color: #fff; border: none; font-weight: bold;">GET REWARD</button>
     </div>
 
     <script>
-        (function() {
-            const balls = document.querySelectorAll('.ball');
-            const final = document.getElementById('finalScreen');
-            const video = document.getElementById('bgVideo');
-            
-            let clicks = 0;
-            const targetClicks = 6;
-            let currentScale = 1.0;
-            let activeBall = null;
+        const video = document.getElementById('bgVideo');
+        const balls = document.querySelectorAll('.ball');
+        const win = document.getElementById('winScreen');
+        let clickCount = 0;
+        let scale = 1.0;
 
-            balls.forEach(ball => {
-                ball.addEventListener('click', function() {
-                    // Принудительный запуск видео при первом тапе (решает проблему черного экрана)
-                    if (video.paused) {
-                        video.play().catch(e => console.log("Video play blocked"));
-                    }
+        // 1. Исправляем видео: запускаем при любом первом клике
+        document.body.addEventListener('click', () => {
+            if (video.paused) {
+                video.play().catch(err => console.log("Play failed", err));
+            }
+        }, { once: true });
 
-                    if (!activeBall) activeBall = this;
-                    if (activeBall !== this) return;
+        // 2. Логика кликов по шарикам
+        balls.forEach(ball => {
+            ball.addEventListener('click', function(e) {
+                e.stopPropagation(); // Чтобы клик не уходил на фон
+                
+                clickCount++;
+                scale += 0.15;
+                
+                this.style.setProperty('--s', scale);
+                this.classList.remove('shake');
+                void this.offsetWidth; 
+                this.classList.add('shake');
+                this.style.transform = `scale(${scale})`;
 
-                    clicks++;
-                    currentScale += 0.2; 
-                    
-                    this.style.setProperty('--scale', currentScale);
-                    this.classList.remove('shake');
-                    void this.offsetWidth; 
-                    this.classList.add('shake');
-                    this.style.transform = `scale(${currentScale})`;
-
-                    if (clicks >= targetClicks) {
-                        this.style.opacity = '0';
-                        setTimeout(() => {
-                            final.style.display = 'flex';
-                        }, 300);
-                    }
-                });
+                if (clickCount >= 6) {
+                    this.style.display = 'none';
+                    setTimeout(() => { win.style.display = 'flex'; }, 200);
+                }
             });
-        })();
+        });
     </script>
-
     <script defer src="./assets/scripts/common.js"></script>
-
 </body>
 </html>
