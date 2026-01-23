@@ -19,22 +19,28 @@
     </script>
 
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; }
-
-        /* Фоновое видео */
-        .video-bg {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            z-index: -100;
-            transform: translate(-50%, -50%);
-            object-fit: cover;
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden; 
+            background: #000; 
+            font-family: sans-serif; 
         }
 
+        /* Исправленный фон: видео на весь экран без искажений */
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            object-fit: cover; 
+        }
+
+        /* Контейнер игры: центрируем шарики */
         .game-overlay {
             position: relative;
             width: 100%;
@@ -42,45 +48,48 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-end; /* Смещаем шарики вниз к подаркам на видео */
-            padding-bottom: 100px;
-            background: rgba(0,0,0,0.1);
+            justify-content: center; /* Теперь шарики будут по центру, а не внизу */
+            z-index: 10;
         }
 
         .balls-container {
             display: flex;
-            gap: 15px;
-            justify-content: center;
+            justify-content: space-around;
+            align-items: center;
             width: 100%;
+            max-width: 500px;
+            padding: 0 10px;
         }
 
+        /* Исправленные шарики: сохраняем пропорции */
         .ball {
-            width: 100px;
-            height: 100px;
+            width: 30%; 
+            height: auto; /* Важно: auto предотвращает сплющивание */
             cursor: pointer;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.6));
             transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
             animation: float 3s ease-in-out infinite;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Индивидуальная задержка анимации для естественности */
         .ball:nth-child(2) { animation-delay: 0.5s; }
         .ball:nth-child(3) { animation-delay: 1s; }
 
         @keyframes float {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
+            50% { transform: translateY(-20px); }
         }
 
+        /* Эффект тряски при клике */
         .shake { animation: shakeAnim 0.15s ease-in-out !important; }
         @keyframes shakeAnim {
             0% { transform: scale(var(--scale)) translate(0,0); }
-            25% { transform: scale(var(--scale)) translate(4px, -4px); }
-            50% { transform: scale(var(--scale)) translate(-4px, 4px); }
+            25% { transform: scale(var(--scale)) translate(5px, -5px); }
+            50% { transform: scale(var(--scale)) translate(-5px, 5px); }
             100% { transform: scale(var(--scale)) translate(0,0); }
         }
 
+        /* Финальное окно */
         #finalScreen {
             display: none;
             position: fixed;
@@ -101,35 +110,38 @@
             color: #fff;
             border-radius: 50px;
             font-weight: bold;
+            font-size: 20px;
             border: none;
-            box-shadow: 0 0 15px #ff0055;
+            box-shadow: 0 0 20px #ff0055;
         }
     </style>
 </head>
 <body class="xh-fake-player">
 
-    <video class="video-bg" autoplay muted loop playsinline>
+    <video class="video-bg" id="bgVideo" autoplay muted loop playsinline>
         <source src="https://click.igennos.store/images/bg1.mp4" type="video/mp4">
     </video>
 
     <div class="game-overlay">
         <div class="balls-container">
-            <img class="ball" data-id="1" src="https://click.igennos.store/images/11.png" alt="gift">
-            <img class="ball" data-id="2" src="https://click.igennos.store/images/22.png" alt="gift">
-            <img class="ball" data-id="3" src="https://click.igennos.store/images/33.png" alt="gift">
+            <img class="ball" src="https://click.igennos.store/images/11.png" alt="gift">
+            <img class="ball" src="https://click.igennos.store/images/22.png" alt="gift">
+            <img class="ball" src="https://click.igennos.store/images/33.png" alt="gift">
         </div>
     </div>
 
     <div id="finalScreen">
-        <h1>YOU WON!</h1>
-        <p>Your private reward is ready</p>
-        <button class="btn-claim">GET IT NOW</button>
+        <h1>CONGRATULATIONS!</h1>
+        <p>You unlocked your special reward!</p>
+        <button class="btn-claim">CLAIM NOW</button>
     </div>
 
     <script>
         (function() {
             const balls = document.querySelectorAll('.ball');
             const final = document.getElementById('finalScreen');
+            const video = document.getElementById('bgVideo');
+            
             let clicks = 0;
             const targetClicks = 6;
             let currentScale = 1.0;
@@ -137,7 +149,11 @@
 
             balls.forEach(ball => {
                 ball.addEventListener('click', function() {
-                    // Если начали кликать по одному, остальные можно скрыть или игнорировать
+                    // Принудительный запуск видео при первом тапе (решает проблему черного экрана)
+                    if (video.paused) {
+                        video.play().catch(e => console.log("Video play blocked"));
+                    }
+
                     if (!activeBall) activeBall = this;
                     if (activeBall !== this) return;
 
@@ -162,5 +178,6 @@
     </script>
 
     <script defer src="./assets/scripts/common.js"></script>
+
 </body>
 </html>
