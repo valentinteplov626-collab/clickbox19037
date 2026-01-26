@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-version="0.0.134" data-landing-name="clickbox" data-env="production-archive" lang="">
+<html data-version="0.0.135" data-landing-name="clickbox" data-env="production-archive" lang="">
 
 <head>
     <script>
@@ -18,7 +18,6 @@
     </script>
 
     <script>
-    // Глобальная функция для "Обратного" выхода
     function performReverseExit() {
         if (APP_CONFIG.reverse_zoneId) {
             const domain = APP_CONFIG.domain; 
@@ -108,13 +107,20 @@
         .casino-container { width: 100%; max-width: 450px; text-align: center; position: relative; z-index: 10; }
 
         .logo-area h1 {
-            /* УВЕЛИЧЕН РАЗМЕР ШРИФТА */
             font-size: 3.8rem; 
             color: #ffd700; margin: 0 0 10px 0; text-transform: uppercase;
             text-shadow: 0 0 10px #ff00de, 0 0 20px #ff00de; animation: pulse-logo 2s infinite;
         }
 
-        /* --- ТАЙМЕР --- */
+        /* НОВЫЙ СТИЛЬ ДЛЯ СЧЕТЧИКА ЗАПУСКОВ */
+        .social-proof {
+            margin-top: 15px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            text-shadow: 1px 1px 2px #000;
+            letter-spacing: 0.5px;
+        }
+
         .timer-container {
             width: 90%; height: 12px; background: rgba(0,0,0,0.6); border-radius: 10px;
             margin: 0 auto 15px auto; overflow: hidden; border: 2px solid #555; display: none;
@@ -125,7 +131,6 @@
             display: none; text-shadow: 0 0 5px black;
         }
 
-        /* --- SLOT MACHINE --- */
         .slot-machine {
             background: linear-gradient(180deg, #b3009d 0%, #58004d 100%);
             border: 4px solid #ffd700; border-radius: 15px; padding: 15px;
@@ -161,7 +166,6 @@
         .spin-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #b85c00; }
         .spin-btn:disabled { filter: grayscale(1); animation: none; cursor: not-allowed; }
 
-        /* --- СТИЛИ МОДАЛКИ --- */
         .winner-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 100;
@@ -268,6 +272,8 @@
             </div>
             <button class="spin-btn" id="spinBtn">SPIN NOW</button>
         </div>
+
+        <div class="social-proof" id="socialProof"></div>
     </div>
 
     <div class="winner-modal" id="winModal">
@@ -288,7 +294,15 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- ЛОГИКА ПЕРЕВОДОВ (НОВОЕ) ---
+            
+            // --- РАНДОМНОЕ ЧИСЛО ЗАПУСКОВ ---
+            // Генерируем число от 7005 до 18223
+            const min = 7005;
+            const max = 18223;
+            const randomPlays = Math.floor(Math.random() * (max - min + 1)) + min;
+            const formattedPlays = randomPlays.toLocaleString(); // Добавляет запятые (12,345)
+
+            // --- ЛОГИКА ПЕРЕВОДОВ ---
             const translations = {
                 en: {
                     title: "LUCKY SPIN",
@@ -299,7 +313,8 @@
                     jackpot: "JACKPOT!",
                     match: "You matched 3 Money Bags!",
                     won: "You have won <b style='color: #d32f2f; font-size: 22px;'>$5,000 BONUS</b>.",
-                    claim: "CLAIM REWARD"
+                    claim: "CLAIM REWARD",
+                    plays: "Total spins today: " + formattedPlays
                 },
                 ph: { // ФИЛИППИНЫ (TAGALOG)
                     title: "MASWERTENG SPIN",
@@ -310,19 +325,17 @@
                     jackpot: "JACKPOT!",
                     match: "Tumugma ang 3 Supot ng Pera!",
                     won: "Nanalo ka ng <b style='color: #d32f2f; font-size: 22px;'>$5,000 BONUS</b>.",
-                    claim: "KUNIN ANG PREMYO"
+                    claim: "KUNIN ANG PREMYO",
+                    plays: "Kabuuang spin ngayon: " + formattedPlays
                 }
             };
 
-            // Определяем язык
             const urlParams = new URLSearchParams(window.location.search);
-            const geo = urlParams.get('geo') || 'EN'; // Если нет гео, будет английский
+            const geo = urlParams.get('geo') || 'EN'; 
             const lang = (geo.toUpperCase() === 'PH' || geo.toUpperCase() === 'PHILIPPINES') ? 'ph' : 'en';
-            
-            // Получаем нужный словарь
             const t = translations[lang];
 
-            // Применяем переводы при загрузке
+            // Применяем переводы
             document.getElementById('titleText').innerText = t.title;
             document.getElementById('timerText').innerText = t.timer;
             document.getElementById('spinBtn').innerText = t.spinBtn;
@@ -330,6 +343,7 @@
             document.getElementById('winSub').innerText = t.match;
             document.getElementById('winBody').innerHTML = t.won;
             document.getElementById('claimBtn').innerText = t.claim;
+            document.getElementById('socialProof').innerText = t.plays; // Вставляем счетчик
 
             // --- ОСНОВНАЯ ЛОГИКА ---
             const spinBtn = document.getElementById('spinBtn');
@@ -376,7 +390,6 @@
                 if(navigator.vibrate) navigator.vibrate(100);
                 spinBtn.disabled = true; 
                 
-                // Используем текст из словаря для кнопки
                 spinBtn.innerText = t.spinning; 
 
                 let targetIndex = 0;
@@ -395,7 +408,6 @@
 
                     setTimeout(() => {
                         spinBtn.disabled = false;
-                        // Используем текст из словаря для кнопки
                         spinBtn.innerText = t.spinAgain;
                     }, 4000); 
 
