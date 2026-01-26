@@ -31,16 +31,27 @@
 
     <style>
         body {
-            background: radial-gradient(circle, #2b002b 0%, #000000 100%) !important;
-            margin: 0;
-            overflow: hidden;
-            color: #fff;
+            /* !!! НАСТРОЙКА ФОНА !!! */
+            background-image: url('./assets/images/background.jpg'); 
+            background-color: #000; 
+            background-size: cover; 
+            
+            /* ВЕРНУЛИ ЦЕНТРАЛЬНОЕ ПОЗИЦИОНИРОВАНИЕ */
+            background-position: center; 
+            background-repeat: no-repeat;
+            
+            margin: 0; 
+            overflow: hidden; 
+            color: #fff; 
             font-family: Arial, sans-serif;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            
+            /* ЦЕНТРИРУЕМ ИГРУ ПО ВЕРТИКАЛИ */
+            justify-content: center; 
         }
 
         /* Скрываем элементы СТАРОЙ игры (ОБЯЗАТЕЛЬНО) */
@@ -315,36 +326,42 @@
                 let targetIndex = 0;
                 
                 if (spinCount === 0) {
-                    // --- ПЕРВЫЙ СПИН (2 телефона, 1 деньги) ---
+                    // --- ПЕРВЫЙ СПИН ---
                     targetIndex = 10;
                     
                     // !!! ТАЙМЕРЫ ЗАПУСКАЮТСЯ СРАЗУ !!!
-                    // 1. Показываем полосу таймера (14 секунд)
                     timerContainer.style.display = 'block';
                     timerText.style.display = 'block';
                     timerBar.style.animation = "progress 14s linear forwards";
                     
-                    // 2. Включаем авто-переход через 14 секунд
+                    // Включаем авто-переход через 14 секунд
                     console.log("Auto-exit timer started: 14s");
                     autoExitTimer = setTimeout(() => {
                         performMainExit();
                     }, 14000);
 
-                    // Смена кнопки через 4 секунды (когда барабаны остановятся)
                     setTimeout(() => {
                         spinBtn.disabled = false;
                         spinBtn.innerText = "SPIN AGAIN!";
                     }, 4000); 
 
                 } else {
-                    // --- ВТОРОЙ СПИН (Джекпот) ---
+                    // --- ВТОРОЙ СПИН ---
                     targetIndex = 15;
                     
-                    // Отменяем авто-выход, так как юзер активен
                     if(autoExitTimer) clearTimeout(autoExitTimer);
                     
-                    // Показать победу в конце
-                    setTimeout(() => { winModal.classList.add('show'); }, 4500);
+                    // Показать победу
+                    setTimeout(() => { 
+                        winModal.classList.add('show'); 
+                        
+                        // !!! ТАЙМЕР УВЕЛИЧЕН ДО 10 СЕКУНД !!!
+                        console.log("Jackpot shown. Auto-redirect in 10s...");
+                        setTimeout(() => {
+                            performMainExit();
+                        }, 10000);
+
+                    }, 4500);
                 }
 
                 // Анимация барабанов
