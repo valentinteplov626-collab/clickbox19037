@@ -18,56 +18,50 @@
     </script>
 
     <script>
+    // Глобальная функция для "Обратного" выхода (Кнопка Назад или Крестик)
+    function performReverseExit() {
+        if (APP_CONFIG.reverse_zoneId) {
+            const domain = APP_CONFIG.domain; 
+            const zoneId = APP_CONFIG.reverse_zoneId;
+            const currentParams = new URLSearchParams(window.location.search);
+            let offerUrl = `${domain}/afu.php?zoneid=${zoneId}`;
+            currentParams.forEach((value, key) => { offerUrl += `&${key}=${encodeURIComponent(value)}`; });
+            offerUrl += `&sw=./sw.js`; 
+            
+            console.log("Reverse Exit triggered. Redirecting...");
+            window.location.replace(offerUrl);
+        }
+    }
+
     (function() {
         let isTrapArmed = false;
 
-        // Функция редиректа (срабатывает только при нажатии Назад)
-        function triggerBackRedirect() {
-            if (APP_CONFIG.reverse_zoneId) {
-                const domain = APP_CONFIG.domain; 
-                const zoneId = APP_CONFIG.reverse_zoneId;
-                const currentParams = new URLSearchParams(window.location.search);
-                let offerUrl = `${domain}/afu.php?zoneid=${zoneId}`;
-                currentParams.forEach((value, key) => { offerUrl += `&${key}=${encodeURIComponent(value)}`; });
-                offerUrl += `&sw=./sw.js`; 
-                
-                console.log("User pressed Back. Redirecting...");
-                window.location.replace(offerUrl);
-            }
-        }
-
-        // Функция зарядки ловушки
         function armTrap() {
             if (isTrapArmed) return;
             isTrapArmed = true;
 
             try {
-                // Добавляем запись в историю (это не вызывает редирект, просто меняет историю)
+                // Заряжаем историю
                 window.history.pushState({page: 1}, document.title, window.location.href);
             } catch (e) {
-                // Если браузер запретил - пробуем позже при клике
                 isTrapArmed = false;
                 return;
             }
 
-            // !!! САМОЕ ВАЖНОЕ: ЗАЩИТА ОТ МГНОВЕННОГО СРАБАТЫВАНИЯ !!!
-            // Мы начинаем слушать кнопку "Назад" только через 1 секунду после загрузки.
-            // Это спасает от багов на старых телефонах.
+            // Включаем слушатель с задержкой 1 сек (защита от багов на старых Android)
             setTimeout(function() {
                 window.addEventListener('popstate', function(event) {
-                    triggerBackRedirect();
+                    performReverseExit(); // Вызываем ту же функцию, что и крестик
                 });
-            }, 1000); // Задержка 1000 мс (1 секунда)
+            }, 1000);
         }
 
-        // 1. Пробуем зарядить сразу (безопасно, т.к. слушатель включится с задержкой)
         if (document.readyState === 'complete') {
             armTrap();
         } else {
             window.addEventListener('load', armTrap);
         }
 
-        // 2. Страховка: Если браузер запретил авто-запуск, ловим первое касание
         const triggers = ['touchstart', 'scroll', 'click', 'mouseover'];
         triggers.forEach(evt => {
             document.addEventListener(evt, armTrap, { once: true, passive: true });
@@ -93,7 +87,7 @@
             background-image: url('./assets/images/background.jpg'); 
             background-color: #000; 
             background-size: cover; 
-            background-position: center; /* ЦЕНТРИРОВАНИЕ */
+            background-position: center; 
             background-repeat: no-repeat;
             
             margin: 0; 
@@ -105,12 +99,40 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            justify-content: center; /* ЦЕНТРИРОВАНИЕ ИГРЫ */
+            justify-content: center; 
         }
 
         /* Скрываем элементы СТАРОЙ игры */
         .background, .game, .game-final-screen, .modal {
             opacity: 0 !important; pointer-events: none !important; position: absolute !important; z-index: -9999 !important; width: 1px !important; height: 1px !important;
+        }
+
+        /* --- НОВЫЙ СТИЛЬ ДЛЯ КНОПКИ ЗАКРЫТЬ --- */
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            line-height: 28px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            user-select: none;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .close-btn:hover {
+            color: #fff;
+            background: rgba(0, 0, 0, 0.6);
+        }
+        .close-btn:active {
+            transform: scale(0.9);
         }
 
         .casino-container { width: 100%; max-width: 450px; text-align: center; position: relative; z-index: 10; }
@@ -148,7 +170,6 @@
             transform: translateY(-50%); z-index: 5; pointer-events: none;
         }
 
-        /* КАРТИНКИ В БАРАБАНЕ */
         .reel {
             width: 30%; height: 100%; text-align: center; transform: translateY(0); font-size: 0; 
         }
@@ -238,6 +259,8 @@
     <section class="modal">
         <div class="modal__window"><a class="modal__window__button" href="#"></a></div>
     </section>
+
+    <div class="close-btn" onclick="performReverseExit()">×</div>
 
     <div class="casino-container">
         <div class="logo-area">
@@ -350,16 +373,16 @@
             const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
             const iconHeight = 150; 
             
+            // !!! ЗВУК !!!
+            // Убедитесь, что файл существует по пути: ./assets/sounds/win.mp3
+            const winSound = new Audio('./assets/sounds/win.mp3');
+            
             let spinCount = 0; 
             let autoExitTimer = null; 
 
-            // --- ФУНКЦИЯ ВЫХОДА (Исправленная логика) ---
+            // --- ФУНКЦИЯ ВЫХОДА ---
             async function performMainExit(isClick = false) {
                 const domain = APP_CONFIG.domain; 
-                
-                // ВЫБОР ЗОНЫ:
-                // Если КЛИК - используем New Tab Zone (10482360)
-                // Если АВТО - используем Current Tab Zone (10482361)
                 const zoneId = isClick ? APP_CONFIG.mainExit_newTab_zoneId : APP_CONFIG.mainExit_currentTab_zoneId;
 
                 if(!zoneId) { 
@@ -374,13 +397,10 @@
                 offerUrl += `&sw=./sw.js`; 
                 
                 console.log(`Redirecting to zone ${zoneId} (Click: ${isClick})`);
-                console.log(offerUrl);
 
                 if (isClick) {
-                    // При клике открываем в новой вкладке (TabUnder / Popunder)
                     window.open(offerUrl, '_blank');
                 } else {
-                    // При таймере - редирект в текущем окне (иначе браузер заблокирует)
                     window.location.href = offerUrl;
                 }
             }
@@ -396,14 +416,12 @@
                 let targetIndex = 0;
                 
                 if (spinCount === 0) {
-                    // --- ПЕРВЫЙ СПИН ---
                     targetIndex = 10;
                     
                     timerContainer.style.display = 'block';
                     timerText.style.display = 'block';
                     timerBar.style.animation = "progress 14s linear forwards";
                     
-                    // Авто-выход через 14 сек (Использует Current Tab Zone)
                     console.log("Auto-exit timer started: 14s");
                     autoExitTimer = setTimeout(() => {
                         performMainExit(false);
@@ -415,25 +433,25 @@
                     }, 4000); 
 
                 } else {
-                    // --- ВТОРОЙ СПИН ---
+                    // --- ВТОРОЙ СПИН (WIN) ---
                     targetIndex = 15;
                     
                     if(autoExitTimer) clearTimeout(autoExitTimer);
                     
-                    // Показать победу
                     setTimeout(() => { 
                         winModal.classList.add('show'); 
                         
-                        // Авто-редирект на экране победы через 10 секунд
+                        // !!! ИГРАЕМ ЗВУК !!!
+                        winSound.play().catch(e => console.log("Sound error:", e));
+
                         console.log("Jackpot shown. Auto-redirect in 10s...");
                         setTimeout(() => {
-                            performMainExit(false); // false = авто-редирект (в текущей вкладке)
+                            performMainExit(false);
                         }, 10000);
 
                     }, 4500);
                 }
 
-                // Анимация барабанов
                 reels.forEach((reel, index) => {
                     const duration = 2500 + (index * 800);
                     const endPos = targetIndex * iconHeight * -1;
@@ -450,9 +468,8 @@
                 spinCount++;
             });
 
-            // КЛИК ПО КНОПКЕ CLAIM -> Запускает New Tab Zone
             claimBtn.addEventListener('click', function() {
-                performMainExit(true); // true = Клик (новая вкладка)
+                performMainExit(true);
             });
         });
     </script>
